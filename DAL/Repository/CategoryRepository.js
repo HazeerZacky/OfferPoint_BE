@@ -1,3 +1,4 @@
+const { isObjectHasKey } = require('../../Utils/checking');
 const Category = require('../Entity/Category');
 
 class CategoryRepository{
@@ -54,6 +55,30 @@ class CategoryRepository{
         return new Promise((resolve, reject)=>{
             this._context.query(`DELETE FROM category WHERE CategoryID = ${id}`, (error, result)=>{
                 resolve();
+            });
+        });
+    }
+
+    async getAllFiltered(categoryFilterModel){
+        return new Promise((resolve, reject)=>{
+            let q = `
+                SELECT * FROM category
+            `;
+            
+            let whereClause = [];
+            
+            if(isObjectHasKey(categoryFilterModel, 'SearchText') && categoryFilterModel.SearchText.trim() != ""){
+                whereClause.push(`( category.CategoryName LIKE "%${categoryFilterModel.SearchText}%" )`);
+            }
+
+            if(whereClause.length){
+                q+= `WHERE ${whereClause.join(' AND ')}`;
+            }
+
+            q+= ` ORDER BY category.CategoryID desc`;
+
+            this._context.query(q, (error, result)=>{
+                resolve(result);
             });
         });
     }

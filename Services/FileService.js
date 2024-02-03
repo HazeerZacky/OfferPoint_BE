@@ -33,6 +33,11 @@ class FileService {
         await this._uow.File.updateFile(fileModel);
     }
 
+    async getFilesByModuleAndRefAndFileUsage(ModuleID, ReferenceID, FileUsageType){
+        const files = await this._uow.File.getFilesByModuleAndRefAndFileUsage(ModuleID, ReferenceID, FileUsageType);
+        return files;
+    }
+
     async removeFile(id){
         const file = await this._uow.File.getFile(id);
         removeFileFromDisk(file.Name);

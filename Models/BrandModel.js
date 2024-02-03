@@ -5,6 +5,8 @@ class BrandModel{
         this.ContactNo = '';
         this.Description = '';
         this.UserID = 0;
+        this.IsVerified = false;
+        this.DefaultCategoryID = 0;
     }
 }
 

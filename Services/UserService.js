@@ -1,5 +1,6 @@
 const BrandModel = require("../Models/BrandModel");
 const UserModel =  require("../Models/UserModel");
+const {UserType} = require("../Enum/UserType"); 
 class UserService {
     constructor(uow){
         this._uow = uow
@@ -41,16 +42,51 @@ class UserService {
         const brandModel = new BrandModel();
         brandModel.BrandName = brandUser.BrandName;
         brandModel.UserID = user.id;
+        brandModel.DefaultCategoryID = brandUser.DefaultCategoryID;
 
         const brand = await this._uow.Brand.createBrand(brandModel);
 
-        return user;
+        return brand;
     }
     
     async loginUser(loginModel){
         const user = await this._uow.User.loginUser(loginModel);
+        if(user){
+            if(user.UserType == UserType.BrandRootAdmin){
+                const brand = await this._uow.Brand.getBrandIdByUserId(user.UserID);
+                user.BrandID = brand.BrandID;
+            }
+            else if(user.UserType == UserType.BrandAdmin || user.UserType == UserType.BrandEditor){
+                const brand = await this._uow.Brand.getBrandIdBySubUserId(user.UserID);
+                user.BrandID = brand.BrandID;
+            }
+        }
         return user;
     } 
+
+    async getAllFiltered(userFilterModel){
+        const user = await this._uow.User.getAllFiltered(userFilterModel);
+        return user;
+    } 
+
+    async linkBrandSubUser(UserID, BrandID){
+        const user = await this._uow.User.linkBrandSubUser(UserID, BrandID);
+        return user;
+    } 
+
+    async createContactMessage(contactModel){
+        const id = await this._uow.User.createContactMessage(contactModel);
+        return id;
+    }
+
+    async removeContactMessage(id){
+        await this._uow.User.removeContactMessage(id);
+    }
+
+    async getAllFilteredContactMessage(contactFilterModel){
+        const message = await this._uow.User.getAllFilteredContactMessage(contactFilterModel);
+        return message;
+    }
 
 }
 module.exports = UserService

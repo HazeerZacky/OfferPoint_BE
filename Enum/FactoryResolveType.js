@@ -5,7 +5,9 @@ const FactoryResolveType = Object.freeze({
     BRAND_SERVICE : 4,
     CATEGORY_SERVICE : 5,
     OFFER_SERVICE : 6,
-    FILE_UPLOAD_SERVICE: 7
+    FILE_UPLOAD_SERVICE: 7,
+    ADVERTISEMENT_SERVICE: 8,
+    PAGINATION_SERVICE: 9
 });
 
 module.exports = {FactoryResolveType}

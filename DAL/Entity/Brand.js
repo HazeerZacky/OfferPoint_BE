@@ -6,6 +6,7 @@ class Brand{
         this.ContactNo = '';
         this.Description = '';
         this.UserID = 0;
+        this.DefaultCategoryID = 0;
     }
 }
 

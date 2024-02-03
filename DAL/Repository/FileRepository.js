@@ -1,3 +1,4 @@
+const { RefrenceModuleType } = require('../../Enum/RefrenceModuleType');
 const File = require('../Entity/File');
 
 class FileRepository{
@@ -46,6 +47,14 @@ class FileRepository{
         return new Promise((resolve, reject)=>{
             this._context.query(`SELECT * FROM files WHERE ModuleID = ${ModuleID} AND ReferenceID = ${ReferenceID} AND FileUsageType = ${FileUsageType}`, (error, result)=>{
                 resolve(result);
+            });
+        });
+    }
+
+    async getHorizondalAds(FileUsageType, ReferenceID){
+        return new Promise((resolve, reject)=>{
+            this._context.query(`SELECT * FROM files WHERE ModuleID = ${RefrenceModuleType.ADVERTISEMENT} AND ReferenceID = ${ReferenceID} AND FileUsageType = ${FileUsageType}`, (error, result)=>{
+                resolve(result[0]);
             });
         });
     }

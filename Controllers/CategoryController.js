@@ -3,6 +3,8 @@ const FactoryContainer = require('../Factory/FactoryContainer');
 const {FactoryResolveType} = require('../Enum/FactoryResolveType');
 
 const _categoryService = FactoryContainer.Resolve(FactoryResolveType.CATEGORY_SERVICE, true);
+const _paginationService = FactoryContainer.Resolve(FactoryResolveType.PAGINATION_SERVICE, false);
+
 
 router.get('/getAll', async (req, res)=>{
     const data = await _categoryService.GetAll();
@@ -34,6 +36,9 @@ router.delete('/removeCategory/:id', async (req, res)=>{
     res.send();
 });
 
-
+router.post('/getAllFiltered', async (req, res)=>{
+    const category = await _categoryService.getAllFiltered(req.body);
+    res.send(_paginationService.BuildPaginationResponse(category, req.body));
+});
 
 module.exports = router;

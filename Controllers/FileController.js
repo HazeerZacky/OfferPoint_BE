@@ -29,5 +29,10 @@ router.delete('/removeFile/:ModuleID/:ReferenceID/:FileUsageType', async (req, r
     res.send();
 });
 
+router.get('/getFilesByModuleAndRefAndFileUsage/:ModuleID/:ReferenceID/:FileUsageType', async (req, res)=>{
+    const file = await _fileService.getFilesByModuleAndRefAndFileUsage(req.params.ModuleID, req.params.ReferenceID, req.params.FileUsageType);
+    res.send(file);
+});
+
 
 module.exports = router;

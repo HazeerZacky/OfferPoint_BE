@@ -32,11 +32,30 @@ class OfferRepository{
                 LEFT JOIN brands ON offers.BrandID = brands.BrandID
                 LEFT JOIN files ON offers.OfferID = files.ReferenceID AND files.ModuleID = ${RefrenceModuleType.Offer} AND files.FileUsageType = ${FileUsageType.OfferPostImage}
             `;
+            let whereClause = [];
             
             if(isObjectHasKey(offerFilterModel, 'OfferID') && offerFilterModel.OfferID > 0){
-                q += ` WHERE offers.OfferID = ${offerFilterModel.OfferID}`;
+                whereClause.push(`offers.OfferID = ${offerFilterModel.OfferID}`);
             }
-             
+
+            if(isObjectHasKey(offerFilterModel, 'CategoryID') && offerFilterModel.CategoryID > 0){
+                whereClause.push(`offers.CategoryID = ${offerFilterModel.CategoryID}`);
+            }
+
+            if(isObjectHasKey(offerFilterModel, 'BrandID') && offerFilterModel.BrandID > 0){
+                whereClause.push(`offers.BrandID = ${offerFilterModel.BrandID}`);
+            }
+
+            if(isObjectHasKey(offerFilterModel, 'SearchText') && offerFilterModel.SearchText.trim() != ""){
+                whereClause.push(`( offers.Title LIKE "%${offerFilterModel.SearchText}%" OR  offers.Description LIKE "%${offerFilterModel.SearchText}%" OR offers.Tags LIKE "%${offerFilterModel.SearchText}%" OR brands.BrandName LIKE "%${offerFilterModel.SearchText}%" )`);
+            }
+
+            if(whereClause.length){
+                q+= `WHERE ${whereClause.join(' AND ')}`;
+            }
+
+            q+= ` ORDER BY offers.OfferID desc`;
+            
             this._context.query(q, (error, result)=>{
                 resolve(result);
             });
@@ -68,6 +87,64 @@ class OfferRepository{
         return new Promise((resolve, reject)=>{
             this._context.query(`DELETE FROM offers WHERE OfferID = ${id}`, (error, result)=>{
                 resolve();
+            });
+        });
+    }
+
+    async getMostRecentOffers(){
+        let q = `
+                SELECT offers.*, category.CategoryName, brands.BrandName, brands.ContactNo, files.Name as FileName, files.FileID
+                FROM offers 
+                LEFT JOIN category ON offers.CategoryID = category.CategoryID
+                LEFT JOIN brands ON offers.BrandID = brands.BrandID
+                LEFT JOIN files ON offers.OfferID = files.ReferenceID AND files.ModuleID = ${RefrenceModuleType.Offer} AND files.FileUsageType = ${FileUsageType.OfferPostImage}
+                ORDER BY offers.OfferID desc LIMIT 6
+            `;
+        
+        return new Promise((resolve, reject)=>{
+            this._context.query(q, (error, result)=>{
+                resolve(result);
+            });
+        });
+    }
+
+    async getMostPopularOffers(){
+        let q = `
+            SELECT offers.*, category.CategoryName, brands.BrandName, brands.ContactNo, files.Name as FileName, files.FileID
+            FROM offers 
+            LEFT JOIN category ON offers.CategoryID = category.CategoryID
+            LEFT JOIN brands ON offers.BrandID = brands.BrandID
+            LEFT JOIN files ON offers.OfferID = files.ReferenceID AND files.ModuleID = ${RefrenceModuleType.Offer} AND files.FileUsageType = ${FileUsageType.OfferPostImage}
+            ORDER BY offers.ViewsCount desc LIMIT 6
+        `;
+
+        return new Promise((resolve, reject)=>{
+            this._context.query(q, (error, result)=>{
+                resolve(result);
+            });
+        });
+    }
+
+    async isAlreadyViewed(OfferID, ClientID){
+        return new Promise((resolve, reject)=>{
+            this._context.query(`SELECT * FROM offerviews WHERE OfferID = ${OfferID} AND ClientID = ${ClientID}`, (error, result)=>{
+                resolve(result.length > 0);
+            });
+        });
+    }
+
+    async increaseViewCount(OfferID){
+        return new Promise((resolve, reject)=>{
+            this._context.query(`UPDATE offers SET ViewsCount = (SELECT ViewsCount from offers WHERE OfferID = ${OfferID}) + 1 WHERE OfferID = ${OfferID}`, (error, result)=>{
+                resolve();
+            });
+        });
+    }
+
+    async insertOfferViewLog (OfferID, ClientID){
+        return new Promise((resolve, reject)=>{
+            this._context.query('INSERT INTO offerviews SET ?', {OfferID, ClientID}, (error, result)=>{
+                resolve({id : result.insertId});
             });
         });
     }

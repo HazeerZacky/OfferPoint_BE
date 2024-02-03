@@ -31,5 +31,10 @@ class CategoryService {
         await this._uow.Category.removeCategory(id);
     }
 
+    async getAllFiltered(categoryFilterModel){
+        var category = await this._uow.Category.getAllFiltered(categoryFilterModel);
+        return category;
+    }
+    
 }
 module.exports = CategoryService
