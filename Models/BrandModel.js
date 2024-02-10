@@ -7,6 +7,7 @@ class BrandModel{
         this.UserID = 0;
         this.IsVerified = false;
         this.DefaultCategoryID = 0;
+        this.Website = "";
     }
 }
 

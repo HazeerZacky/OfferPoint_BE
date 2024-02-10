@@ -50,6 +50,11 @@ router.delete('/removeUser/:id', async (req, res)=>{
     res.send();
 });
 
+router.get('/IsUserNameAlreadyExist/:UserName/:UserID', async (req, res)=>{
+    const isUserNameAlreadyExist = await _userService.IsUserNameAlreadyExist(req.params.UserName, req.params.UserID);
+    res.send(isUserNameAlreadyExist);
+});
+
 router.post('/loginUser', async (req, res)=>{
     const user = await _userService.loginUser(req.body);
     if(user){

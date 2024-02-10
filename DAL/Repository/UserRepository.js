@@ -167,6 +167,14 @@ class UserRepository{
         });
     }
 
+    async IsUserNameAlreadyExist(UserName, UserID){
+        return new Promise((resolve, reject)=>{
+            this._context.query(`SELECT * FROM users WHERE UserName = '${UserName}' AND UserID != ${UserID}`, (error, result)=>{
+                resolve(result.length > 0);
+            });
+        });
+    }
+
     ToEntity(source, target){
         
         target.UserID = source.UserID;

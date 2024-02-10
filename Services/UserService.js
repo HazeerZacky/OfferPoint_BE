@@ -88,5 +88,9 @@ class UserService {
         return message;
     }
 
+    async IsUserNameAlreadyExist(UserName, UserID){
+        const isUserNameAlreadyExist = await this._uow.User.IsUserNameAlreadyExist(UserName, UserID);
+        return isUserNameAlreadyExist;
+    }
 }
 module.exports = UserService

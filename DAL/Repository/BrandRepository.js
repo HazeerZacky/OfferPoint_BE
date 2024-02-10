@@ -124,7 +124,7 @@ class BrandRepository{
         target.UserID = source.UserID;
         target.IsVerified = source.IsVerified;
         target.DefaultCategoryID = source.DefaultCategoryID;
-
+        target.Website = source.Website;
         return target;
     }
 
